@@ -8,8 +8,8 @@
 
 using namespace std;
 
-const int WIDTH = 60, HEIGHT = 40;
-const int dW = 1, dH = 1;
+const int WIDTH = 60, HEIGHT = 111;
+const int dW = 1, dH =1 ;
 
 char Obstaculo[12][2][8] = {
     {
@@ -24,11 +24,11 @@ struct coord {
 };
 
 struct dato {
-    coord pos[14];
-    char car[14];
+    coord pos[10];
+    char car[10];
 };
 
-dato pass[12];
+dato pass [12];
 
 void gotoxy(int x, int y) {
     HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -53,6 +53,7 @@ void borrar(char plano[HEIGHT / dH][WIDTH / dW + 1], int A, int B) {
 class mapa {
 private:
     int x, y, c, m;
+    float vy=0.0f;
     int Poss[13] = {0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36};
     int prevX, prevY; 
 
@@ -75,6 +76,7 @@ public:
                 if (j % 3 == 0) {
                     dibujar(plano, i, j, '_');
                 }
+				
             }
         }
     }
@@ -107,11 +109,44 @@ public:
         prevX = x;
         prevY = Poss[y];
     }
+    void ejecucion(int &dir){
+    	vy-=1150.0f*0.0416;
+    	if(vy>=752.0f)
+    	  direccion(dir);
+	}
+	void direccion(int &dir)
+	{
+		switch(dir)
+		{
+			case 1:
+				y++;
+				dir=0;
+				break;
+			case 2:
+				x+=2;
+				dir=0;
+				break;
+			case 3:
+				y--;
+				dir=0;
+				break;
+			case 4:
+				x-=2;
+				dir=0;
+				break;
+		}
+	}
+	void dir2()
+	{
+		if(vy<=600.0f)
+		vy=800.0f;
+	}
 };
 
 int main() {
 
     char plano[HEIGHT / dH][WIDTH / dW + 1];
+    
     for (int i = 0; i < HEIGHT / dH; i++) {
         for (int j = 0; j < WIDTH / dW; j++) {
             plano[i][j] = ' ';
@@ -122,19 +157,73 @@ int main() {
 
     mapa j1(28, 0, 0, 0);
     
+    float fps=24.0f;
+    float dt=1.0f/fps;
+    float acumulador=0.0f;
+    
+  
+    clock_t inicio = clock();
+    
     j1.pasar();
 
     bool game = true;
-
+    
+    int dir=0;
+    
+    
     while (game) {
-        gotoxy(0, 0);
-        j1.Pmapa(plano);
-        j1.draw(plano);
-        for (int i = 0; i < HEIGHT / dH; i++) {
-            cout << plano[i];
-        }
+    	
         
-    }
+    	clock_t final=clock();
+    	acumulador+= float (final-inicio)/CLOCKS_PER_SEC;
+    	inicio=final;
+    	
+    	if(acumulador >=0.2f) acumulador = 2.0f;
+    	system("cls");
+    	
+     while (acumulador >= dt) {
+            if (_kbhit()) {
+                char key = _getch();
+                switch (key) {
+                case 'W':
+                case 'w':
+                    j1.dir2();
+                    dir = 1;
+                    break;
+                case 'S':
+                case 's':
+                    j1.dir2();
+                    dir = 3;
+                    break;
+                case 'D':
+                case 'd':
+                    j1.dir2();
+                    dir = 2;
+                    break;
+                case 'A':
+                case 'a':
+                    j1.dir2();
+                    dir = 4;
+                    break;
+                case 27:  
+                    game = false;
+                    break;
+                }
+            }
+    		
+		j1.ejecucion(dir);
+		acumulador -=dt;
+		
+		}
+        gotoxy(0, 0);
+       j1.Pmapa(plano);
+       j1.draw(plano);
+       
+    for (int i = 0; i < HEIGHT / dH; i++) {
+                cout << plano[i];
+        }
+	 }
+
 
     return 0;
 }
