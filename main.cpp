@@ -43,7 +43,7 @@ char Obstaculo[12][2][8] = {
 };
 
 struct coord {
-    int x;
+    int ;
     int y;
 };
 
@@ -77,6 +77,7 @@ void borrar(char plano[HEIGHT / dH][WIDTH / dW + 1], int A, int B) {
 class mapa {
 private:
     int x, y, c, m;
+    int p1=0,p2=0,p3=0,p4=0;
     float vy=0.0f;
     int Poss[13] = {0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36};
     int prevX, prevY; 
@@ -238,14 +239,116 @@ public:
 				break;
 		}
 	}
+	
 	void dir2()
 	{
 		if(vy<=600.0f)
 		vy=800.0f;
 	}
+	void des()
+	{
+	p1++;
+	if(p1>40){	
+	p1=0;
+}
+	p2++;
+	if(p2>60){	
+	p2=0;
+}
+	p3++;
+	if(p3>80){	
+	
+	p3=0;
+}
+	p4++;
+	if(p4>100){	  
+	p4=0;
+}
+	}
+	void desplazamiento(int nivel)
+	{
+		if(p1==40)
+		{
+			for(int i =0;i<niveles[nivel][7];i++)
+			{
+				car[7][i].x++;
+				if(car[7][i].x>60)
+				car[7][i].x=0;
+			}
+		}
+	if(p2==60)
+		{
+			for(int i =0;i<niveles[nivel][3];i++)
+			{
+				car[3][i].x--;
+				if(car[3][i].x>60)
+				car[3][i].x=0;
+			}
+			for(int i =0;i<niveles[nivel][5];i++)
+			{
+				car[5][i].x--;
+				if(car[5][i].x<0)
+				car[5][i].x=60;
+			}
+		}
+		if(p3==80)
+		{
+			for(int i =0;i<niveles[nivel][1];i++)
+			{
+				car[1][i].x++;
+				if(car[1][i].x>60)
+				car[1][i].x=0;
+			}
+			for(int i =0;i<niveles[nivel][8];i++)
+			{
+				car[8][i].x--;
+				if(car[8][i].x<0)
+				car[8][i].x=60;
+			}
+		}
+		if(p4==100)
+		{
+			for(int j=0;j<5;j+=2)
+			{
+				
+			
+			for(int i =0;i<niveles[nivel][j];i++)
+			{
+				car[j][i].x--;
+				if(car[j][i].x<0)
+				car[j][i].x=60;
+			}
+		}
+            for(int j=6;j<10;j+=3)    		
+			for(int i =0;i<niveles[nivel][j];i++)
+			{
+				car[j][i].x++;
+				if(car[j][i].x>60)
+				car[j][i].x=0;
+			}
+		}
+		cout << "p1: " << p1 << " | p2: " << p2 << " | p3: " << p3 << " | p4: " << p4 << endl;
+			
+	}
+	
 };
 
-
+void limpiarConsola() {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    COORD coordScreen = {0, 0};
+    DWORD cCharsWritten;
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    DWORD dwConSize;
+     
+	 if (GetConsoleScreenBufferInfo(hConsole, &csbi)) {
+        dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
+        FillConsoleOutputCharacter(hConsole, (TCHAR) ' ', dwConSize, coordScreen, &cCharsWritten);
+        GetConsoleScreenBufferInfo(hConsole, &csbi);
+        FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
+        SetConsoleCursorPosition(hConsole, coordScreen);
+    }
+}
+void limpiarConsola();
 
 int main() {
 	
@@ -266,7 +369,7 @@ int main() {
     
 	int nivel= 0;
     
-    float fps=24.0f;
+    float fps=5.0f;
     float dt=1.0f/fps;
     float acumulador=0.0f;
     
@@ -279,12 +382,12 @@ int main() {
     bool game = true;
     
     int dir=0;
-    
+
     
     while (game) {
-    	system ("cls");
-        
-        
+    	
+		limpiarConsola();
+
         for (int i = 0; i < HEIGHT / dH; i++) {
                 cout << plano[i];
         }
@@ -339,12 +442,15 @@ int main() {
 		acumulador -=dt;
 		
 		}
-        gotoxy(0, 0);
+		
+       gotoxy(0, 0);
+       j1.desplazamiento(nivel);
        j1.Pmapa(plano);
        j1.generacion(plano,nivel);
        j1.draw(plano);
-       
-	 }
+       j1.des();
+       Sleep(50);
+  }
 
 
 
