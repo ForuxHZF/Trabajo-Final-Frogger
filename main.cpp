@@ -43,16 +43,19 @@ char Obstaculo[12][2][8] = {
 };
 
 struct coord {
-    int ;
+    int x ;
     int y;
 };
 
 struct dato {
-    coord pos[12];
-    char car[12];
+    coord pos[14];
+    char car[14];
 };
 
 dato pass [12];
+
+dato choqueR[1];
+dato choqueC[12][5];
 
 void gotoxy(int x, int y) {
     HANDLE hcon = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -144,7 +147,7 @@ public:
     }
 }
     void pasar() {
-        for (int t = 0; t < 8; t++) {
+        for (int t = 0; t < 12; t++) {
             int q = 0;
             int y;
             for (int i = 0; i < 2; i++) {
@@ -160,7 +163,8 @@ public:
         }
     }
 
-    void draw(char plano[HEIGHT / dH][WIDTH / dW + 1]) {
+    void draw(char plano[HEIGHT / dH][WIDTH / dW + 1],dato choqueR[1]) 
+	{
     	prevX = x;
         prevY = Poss[y];
     	
@@ -171,26 +175,30 @@ public:
         
         for (int i = 0; i < 6; i++) {
             dibujar(plano, (x + pass[c].pos[i].x * dW), (Poss[y] + pass[c].pos[i].y * dH), pass[c].car[i]);
+            choqueR[0].pos[i].x =(x + pass[c].pos[i].x * dW);
+            choqueR[0].pos[i].y=(Poss[y] + pass[c].pos[i].y * dH);
         }
 
     }
     
-    void draw(char plano[HEIGHT / dH][WIDTH / dW + 1],int t, int u, int c)
+    void draw(char plano[HEIGHT / dH][WIDTH / dW + 1],int t, int u, int c, dato choqueC[12][5])
     {
     	for(int j = 0; j < t; j++)
     {
     for(int i = 0; i < NC[c]; i++)
     {
         dibujar(plano, (car[u][j].x) + pass[c].pos[i].x, (Poss[car[u][j].y]) + pass[c].pos[i].y, pass[c].car[i]);
+        choqueC[u][j].pos[i].x = (car[u][j].x) + pass[c].pos[i].x ;
+        choqueC[u][j].pos[i].y = (Poss[car[u][j].y]) + pass[c].pos[i].y;
     }
 }
 	}
 	
-	void generacion(char plano[HEIGHT / dH][WIDTH / dW + 1],int nivel )
+	void generacion(char plano[HEIGHT / dH][WIDTH / dW + 1],int nivel,dato choque[12][5] )
 	{
 		for(int i=0 ; i<10;i++)
 		{
-			draw(plano,niveles[nivel][i],i,PO[i]);
+			draw(plano,niveles[nivel][i],i,PO[i],choque);
 		}
 	}
 	
@@ -248,26 +256,26 @@ public:
 	void des()
 	{
 	p1++;
-	if(p1>40){	
+	if(p1>2000){	
 	p1=0;
 }
 	p2++;
-	if(p2>60){	
+	if(p2>3000){	
 	p2=0;
 }
 	p3++;
-	if(p3>80){	
+	if(p3>3500){	
 	
 	p3=0;
 }
 	p4++;
-	if(p4>100){	  
+	if(p4>4000){	  
 	p4=0;
 }
 	}
 	void desplazamiento(int nivel)
 	{
-		if(p1==40)
+		if(p1==2000)
 		{
 			for(int i =0;i<niveles[nivel][7];i++)
 			{
@@ -276,7 +284,7 @@ public:
 				car[7][i].x=0;
 			}
 		}
-	if(p2==60)
+	if(p2==3000)
 		{
 			for(int i =0;i<niveles[nivel][3];i++)
 			{
@@ -291,7 +299,7 @@ public:
 				car[5][i].x=60;
 			}
 		}
-		if(p3==80)
+		if(p3==3500)
 		{
 			for(int i =0;i<niveles[nivel][1];i++)
 			{
@@ -306,7 +314,7 @@ public:
 				car[8][i].x=60;
 			}
 		}
-		if(p4==100)
+		if(p4==4000)
 		{
 			for(int j=0;j<5;j+=2)
 			{
@@ -331,24 +339,114 @@ public:
 			
 	}
 	
+	int col(dato choqueR[1], dato choqueC[12][5], int r, int l, int nivel) {
+    for (int t = 0; t < niveles[nivel][l-1]; t++) {
+        for (int i = 0; i < NC[0]; i++) {
+            for (int j = 0; j < NC[1]; j++) {
+                if (choqueR[0].pos[i].x == choqueC[l-1][t].pos[j].x && choqueR[0].pos[i].y == choqueC[l-1][t].pos[j].y) {
+                    return r;  
+                }
+            }
+        }
+    }
+    return 0;  
+}
+	void colision (dato choqueR[1],dato choqueC[12][5],int &nivel)
+	{
+		switch(y)
+		{
+			case 0:
+				break;
+				
+			case 1:
+				if(col(choqueR,choqueC,0,y,nivel)== 0)
+				{
+					gotoxy(65,10+y);cout<<"muerte";
+				}
+				
+				break;
+				
+			case 2:
+				if(col(choqueR,choqueC,0,y,nivel)== 0)
+				{
+					gotoxy(65,10+y);cout<<"muerte";
+				}
+				
+				break;
+				
+			case 3:
+				if(col(choqueR,choqueC,0,y,nivel)== 0)
+				{
+					gotoxy(65,10+y);cout<<"muerte";
+				}
+				
+				break;
+				
+			case 4:
+				if(col(choqueR,choqueC,0,y,nivel)== 0)
+				{
+					gotoxy(65,10+y);cout<<"muerte";
+				}
+				
+				break;
+				
+			case 5:
+				if(col(choqueR,choqueC,0,y,nivel)== 0)
+				{
+					gotoxy(65,10+y);cout<<"muerte";
+				}
+				
+				break;
+				
+					case 6:
+				break;
+				
+					case 7:
+				if(col(choqueR,choqueC,0,y,nivel)== 0)
+				{
+					gotoxy(65,10+y);cout<<"muerte";
+				}
+				
+				break;
+				
+					case 8:
+				if(col(choqueR,choqueC,0,y,nivel)== 0)
+				{
+					gotoxy(65,10+y);cout<<"muerte";
+				}
+				
+				break;
+				
+					case 9:
+				if(col(choqueR,choqueC,0,y,nivel)== 0)
+				{
+					gotoxy(65,10+y);cout<<"muerte";
+				}
+				
+				break;
+				
+					case 10:
+				if(col(choqueR,choqueC,0,y,nivel)== 0)
+				{
+					gotoxy(65,10+y);cout<<"muerte";
+				}
+				
+				break;
+				
+					case 11:
+							if(col(choqueR,choqueC,0,y,nivel)== 0)
+				{
+					gotoxy(65,10+y);cout<<"muerte";
+				}
+				break;
+				
+					case 12:
+				break;
+		}
+	}
 };
 
-void limpiarConsola() {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD coordScreen = {0, 0};
-    DWORD cCharsWritten;
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    DWORD dwConSize;
-     
-	 if (GetConsoleScreenBufferInfo(hConsole, &csbi)) {
-        dwConSize = csbi.dwSize.X * csbi.dwSize.Y;
-        FillConsoleOutputCharacter(hConsole, (TCHAR) ' ', dwConSize, coordScreen, &cCharsWritten);
-        GetConsoleScreenBufferInfo(hConsole, &csbi);
-        FillConsoleOutputAttribute(hConsole, csbi.wAttributes, dwConSize, coordScreen, &cCharsWritten);
-        SetConsoleCursorPosition(hConsole, coordScreen);
-    }
-}
-void limpiarConsola();
+
 
 int main() {
 	
@@ -386,7 +484,6 @@ int main() {
     
     while (game) {
     	
-		limpiarConsola();
 
         for (int i = 0; i < HEIGHT / dH; i++) {
                 cout << plano[i];
@@ -444,11 +541,12 @@ int main() {
 		}
 		
        gotoxy(0, 0);
-       j1.desplazamiento(nivel);
        j1.Pmapa(plano);
-       j1.generacion(plano,nivel);
-       j1.draw(plano);
+       j1.generacion(plano,nivel,choqueC);
        j1.des();
+       j1.draw(plano,choqueR);
+       j1.desplazamiento(nivel);
+       j1.colision(choqueR,choqueC,nivel);
        Sleep(50);
   }
 
