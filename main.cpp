@@ -65,6 +65,7 @@ void gotoxy(int x, int y) {
     SetConsoleCursorPosition(hcon, dwPos);
 }
 
+
 void dibujar(char plano[HEIGHT / dH][WIDTH / dW + 1 ], int A, int B, char c) {
     B = HEIGHT / dH - 1 - B;
     if (A < 0 || B < 0 || A >= WIDTH / dW || B >= HEIGHT / dH) return;
@@ -82,12 +83,17 @@ private:
     int x, y, c, m;
     int p1=0,p2=0,p3=0,p4=0;
     float vy=0.0f;
+    int s ,con = 8;
+    int min = 300;
     int Poss[13] = {0, 3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36};
     int prevX, prevY; 
     
     int PY[10] = {1,2,3,4,5,7,8,9,10,11};
     int NC[12] = {6,6,6,6,9,5,7,14,10,6,6,6};
     int PO[10] = {1,2,3,4,5,6,5,4,3,2};
+    int GR[12] = {5,5,4,4,3,3,2,2,1,1,1,1};
+    
+     
     
     int niveles[12][10]={{2,3,2,1,2,3,4,3,2,2},
 	                     {4,3,3,1,3,3,1,3,2,2},
@@ -110,6 +116,7 @@ private:
                     };
 						                     
 coord car[12][5];
+coord car1[1];
 
 public:
 	int retx()
@@ -269,10 +276,13 @@ public:
 	p3=0;
 }
 	p4++;
-	if(p4>4000){	  
+	if(p4>4000)
+	{	  
 	p4=0;
+	
+    }
+    min--;
 }
-	}
 	void desplazamiento(int nivel)
 	{
 		if(p1==2000)
@@ -335,11 +345,11 @@ public:
 				car[j][i].x=0;
 			}
 		}
-		cout << "p1: " << p1 << " | p2: " << p2 << " | p3: " << p3 << " | p4: " << p4 << endl;
 			
 	}
 	
-	int col(dato choqueR[1], dato choqueC[12][5], int r, int l, int nivel) {
+	int col(dato choqueR[1], dato choqueC[12][5], int r, int l, int nivel) 
+	{
     for (int t = 0; t < niveles[nivel][l-1]; t++) {
         for (int i = 0; i < NC[0]; i++) {
             for (int j = 0; j < NC[1]; j++) {
@@ -361,7 +371,7 @@ public:
 			case 1:
 				if(col(choqueR,choqueC,0,y,nivel)== 0)
 				{
-					gotoxy(65,10+y);cout<<"muerte";
+					muerte(nivel);
 				}
 				
 				break;
@@ -369,7 +379,7 @@ public:
 			case 2:
 				if(col(choqueR,choqueC,0,y,nivel)== 0)
 				{
-					gotoxy(65,10+y);cout<<"muerte";
+					muerte(nivel);
 				}
 				
 				break;
@@ -377,7 +387,7 @@ public:
 			case 3:
 				if(col(choqueR,choqueC,0,y,nivel)== 0)
 				{
-					gotoxy(65,10+y);cout<<"muerte";
+					muerte(nivel);
 				}
 				
 				break;
@@ -385,7 +395,7 @@ public:
 			case 4:
 				if(col(choqueR,choqueC,0,y,nivel)== 0)
 				{
-					gotoxy(65,10+y);cout<<"muerte";
+					muerte(nivel);
 				}
 				
 				break;
@@ -393,7 +403,7 @@ public:
 			case 5:
 				if(col(choqueR,choqueC,0,y,nivel)== 0)
 				{
-					gotoxy(65,10+y);cout<<"muerte";
+					muerte(nivel);
 				}
 				
 				break;
@@ -404,7 +414,7 @@ public:
 					case 7:
 				if(col(choqueR,choqueC,0,y,nivel)== 0)
 				{
-					gotoxy(65,10+y);cout<<"muerte";
+					muerte(nivel);
 				}
 				
 				break;
@@ -412,7 +422,7 @@ public:
 					case 8:
 				if(col(choqueR,choqueC,0,y,nivel)== 0)
 				{
-					gotoxy(65,10+y);cout<<"muerte";
+					muerte(nivel);
 				}
 				
 				break;
@@ -420,7 +430,7 @@ public:
 					case 9:
 				if(col(choqueR,choqueC,0,y,nivel)== 0)
 				{
-					gotoxy(65,10+y);cout<<"muerte";
+					muerte(nivel);
 				}
 				
 				break;
@@ -428,25 +438,106 @@ public:
 					case 10:
 				if(col(choqueR,choqueC,0,y,nivel)== 0)
 				{
-					gotoxy(65,10+y);cout<<"muerte";
+					muerte(nivel);
 				}
 				
 				break;
 				
 					case 11:
-							if(col(choqueR,choqueC,0,y,nivel)== 0)
+				if(col(choqueR,choqueC,0,y,nivel)== 0)
 				{
-					gotoxy(65,10+y);cout<<"muerte";
+					muerte(nivel);
 				}
 				break;
 				
 					case 12:
+						ganar(nivel);
+						nivel++;
+						con=8;
+						min = 300;
+						
 				break;
 		}
 	}
+	void muerte (int nivel)
+	{
+		x=25;
+		y=0;
+		con--;
+		limpiar();
+		retxy(nivel);
+	}
+	void limpiar()
+	{
+		for(int i=0; i<11;i++)
+		{
+			for(int j=0; j<5;j++)
+			{
+				car[i][j]= car1[0];
+			}
+		}
+	}
+	void ganar(int &nivel)
+	{
+		y=0;
+		x=28;
+		limpiar();
+		retxy(nivel);
+	}
+	void reinicio (int &nivel)
+	{
+		con=8;
+		nivel=0;
+		min=300;
+		limpiar();
+		retxy(nivel);
+	}
+	void perder (int & nivel)
+	{
+		
+		if(con<=0)
+		reinicio(nivel);
+		
+		if (min <= 0)
+		con--;
+	}
+	void portada()
+	{
+		gotoxy(80,0);cout<<"------------------------";
+	    gotoxy(80,1);cout<<"--------FROGGER---------";
+	    gotoxy(80,2);cout<<"------------------------";
+	    gotoxy(80,3);cout<<"-------Iniciar-Juego-----";
+	    gotoxy(80,4);cout<<"------------------------";
+	    
+	    gotoxy(70,8);cout<<"------Instrucciones-----";
+	    gotoxy(70,9);cout<<"-------------------------------";
+	    gotoxy(70,10);cout<<"--Movimiento-De-La-Rana--------";
+	    gotoxy(70,11);cout<<"--W-Para-Moverse-Hacia-Arriba------------------";
+	    gotoxy(70,12);cout<<"--S-Para-Moverse-Hacia-Abajo-------------------";
+	    gotoxy(70,13);cout<<"--A-Para-Moverse-Hacia-La-Izquierda------------";
+	    gotoxy(70,14);cout<<"--D-Para-Moverse-Hacia-La-Derecha--------------";
+	    gotoxy(70,15);cout<<"-----------------------------------------------";
+	    gotoxy(70,16);cout<<"-Si-Los-Obstaculos-Te-Chocan-Perderas-Una-Vida-";
+	    
+	    gotoxy(80,20);cout<<"----Presiona-ESC-Para-Salir-----";
+	    gotoxy(80,22);cout<<"Tiempo:  ";
+	    gotoxy(95,22);cout<<"Vidas:   ";
+	    gotoxy(88,24);cout<<"nivel:   ";
+	    
+	    
+	}
+	
+	void marcador(int nivel)
+	{
+		gotoxy(88,22);cout<<min;
+		gotoxy(103,22);cout<<con;
+		gotoxy(100,24);cout<<nivel;
+		if(min==99)
+		{
+		gotoxy(96,24);cout<<"    ";		
+		}
+	}
 };
-
-
 
 int main() {
 	
@@ -476,13 +567,15 @@ int main() {
     
     j1.pasar();
     j1.retxy(nivel);
-
+    j1.portada();
+    
     bool game = true;
     
     int dir=0;
 
     
     while (game) {
+    	
     	
 
         for (int i = 0; i < HEIGHT / dH; i++) {
@@ -531,23 +624,29 @@ int main() {
                 case 27:  
                     game = false;
                     break;
+                case 'P':
+                case 'p':
+                j1.reinicio(nivel);
+                break;
                 }
             }
     		
 		j1.ejecucion(dir);
 		j1.direccion(dir);
 		acumulador -=dt;
-		
 		}
 		
-       gotoxy(0, 0);
+	   j1.marcador(nivel); 
+       j1.des();
        j1.Pmapa(plano);
        j1.generacion(plano,nivel,choqueC);
-       j1.des();
        j1.draw(plano,choqueR);
        j1.desplazamiento(nivel);
        j1.colision(choqueR,choqueC,nivel);
-       Sleep(50);
+       j1.perder(nivel);
+       
+	   gotoxy(0,0);
+       Sleep(80);
   }
 
 
